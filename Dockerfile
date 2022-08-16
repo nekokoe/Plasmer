@@ -15,6 +15,10 @@ COPY --from=builder /usr/local/bin/prodigal /usr/local/bin/
 
 RUN apt-get update && \
         apt-get install --no-install-suggests --no-install-recommends --yes\
-        parallel
+        parallel hmmer
 
-ENTRYPOINT ["prodigal"]
+
+RUN which perl
+RUN perl -version
+
+ENTRYPOINT ["hmmbuild"]
