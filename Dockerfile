@@ -18,7 +18,10 @@ RUN wget "ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.10.1/ncbi-blast-
 
 RUN git clone https://github.com/refresh-bio/kmer-db && \
 	cd kmer-db && \
-	make -j8 
+	make -j8
+
+RUN wget "http://eddylab.org/software/infernal/infernal.tar.gz" && tar zxf infernal.tar.gz && cd infernal-1.1.4 && ./configure && make -j8 && \
+	make check && pwd && ls 
 
 FROM ubuntu:22.04
 MAINTAINER iskoldt-X
