@@ -5,8 +5,8 @@ RUN apt-get update && \
 RUN wget --no-check-certificate "https://github.com/shenwei356/seqkit/releases/download/v2.2.0/seqkit_linux_amd64.tar.gz" -O /tmp/seqkit.tar.gz && \
 	tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
 
-FROM ubuntu:20.04
+FROM alpine
 MAINTAINER iskoldt-X
 COPY --from=builder /usr/bin/seqkit /usr/bin/
-
-ENTRYPOINT ["seqkit"]
+RUN apk --no-cache add parallel
+ENTRYPOINT ["parallel", "--will-cite"]
