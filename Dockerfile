@@ -18,7 +18,4 @@ RUN apt-get update && \
         parallel hmmer
 
 
-RUN which perl
-RUN perl -version
-
 ENTRYPOINT ["hmmbuild"]
