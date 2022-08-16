@@ -1,12 +1,20 @@
-FROM ubuntu:20.04 AS builder
-
-RUN apt-get update && \
-	apt-get install --no-install-suggests --no-install-recommends --yes wget
+FROM gcc:12 AS builder
+ 
 RUN wget --no-check-certificate "https://github.com/shenwei356/seqkit/releases/download/v2.2.0/seqkit_linux_amd64.tar.gz" -O /tmp/seqkit.tar.gz && \
 	tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
 
-FROM alpine
+RUN git clone https://github.com/hyattpd/Prodigal.git && \
+	cd Prodigal && \
+	make install 
+
+FROM ubuntu:20.04
 MAINTAINER iskoldt-X
+
 COPY --from=builder /usr/bin/seqkit /usr/bin/
-RUN apk --no-cache add parallel
-ENTRYPOINT ["parallel", "--will-cite"]
+COPY --from=builder /usr/local/bin/prodigal /usr/local/bin/
+
+RUN apt-get update && \
+        apt-get install --no-install-suggests --no-install-recommends --yes\
+        parallel
+
+ENTRYPOINT ["prodigal"]
