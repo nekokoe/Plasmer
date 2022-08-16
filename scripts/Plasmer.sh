@@ -1,0 +1,148 @@
+#/bin/bash
+help()
+{
+	cat <<- EOF
+	Desc: Identifying plasmids contigs and assign taxonomy.
+	Usage: PlasMer -g input_fasta -p out_prefix -d db -t threads -o outpath
+	Author: Qianhui Zhu
+	The parameters:
+
+		-h --help       Print the help info and exit.
+
+		-v --version    Print the version info.
+
+		-g --genome     The input fasta.
+
+		-p --prefix     The prefix for the simulate reads.
+		
+		-d --db         The path of databases.
+
+		-t --threads    Number of threads.
+
+		-o --outpath    The outpath.
+		
+		License: none
+	EOF
+		exit 0
+}
+
+version_info()
+{
+cat <<- EOF
+	PlasMer.sh 2022-6-6-v1 #add help info
+EOF
+	exit 0
+}
+
+
+while true;do
+	case "$1" in
+		-g|--genome)
+			genome=$2;shift 2;;
+		-p|--prefix)
+			prefix=$2;shift 2;;
+		-d|--db)
+			db=$2;shift 2;;
+		-t|--threads)
+			threads=$2;shift 2;;
+		-o|--outpath)
+			outpath=$2;shift 2;;
+		-h|--help)
+			help;; # Print the help info.
+		-v|--version)
+			version_info;; # Print the version info.
+		*)
+	break;
+	esac
+done
+
+if [ ! -d ${outpath} ];then
+	mkdir ${outpath}
+	mkdir ${outpath}/intermediate
+	mkdir ${outpath}/results
+	else
+	rm -rf ${outpath}
+	mkdir ${outpath}
+	mkdir ${outpath}/intermediate
+	mkdir ${outpath}/results
+fi
+
+seqkit fx2tab --gc --gc-skew --length --only-id --name ${genome} > ${outpath}/intermediate/${prefix}.seqkit
+
+python /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/check_length.py ${genome} ${outpath}/intermediate/${prefix}.seqkit ${outpath}/intermediate/${prefix}.plasmer.length.class ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta
+
+echo ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta > ${outpath}/intermediate/${prefix}.sample.list
+
+kmer-db new2all -t ${threads} -multisample-fasta ${db}/plsdb_minus_ncbi_representative.k25.kmer-db ${outpath}/intermediate/${prefix}.sample.list ${outpath}/intermediate/${prefix}.pmr.common_table
+kmer-db new2all -t ${threads} -multisample-fasta ${db}/plsdb.k25.kmer-db ${outpath}/intermediate/${prefix}.sample.list ${outpath}/intermediate/${prefix}.p.common_table
+kmer-db new2all -t ${threads} -multisample-fasta ${db}/ncbi_representative_minus_plsdb.k18.f0.1.kmer-db ${outpath}/intermediate/${prefix}.sample.list ${outpath}/intermediate/${prefix}.rmp.common_table
+kmer-db new2all -t ${threads} -multisample-fasta ${db}/ncbi_representative.k18.f0.1.kmer-db ${outpath}/intermediate/${prefix}.sample.list ${outpath}/intermediate/${prefix}.r.common_table
+
+
+perl -ne 'chomp; next if ($.<3); @F=split/,/; @ID=split/\s/,$F[0]; ($id,$class)=split/-/,$ID[0]; print join("\t",($ID[0],$F[-1]/$F[-2]))."\n";' ${outpath}/intermediate/${prefix}.pmr.common_table > ${outpath}/intermediate/${prefix}.pmr.common_table.features
+perl -ne 'chomp; next if ($.<3); @F=split/,/; @ID=split/\s/,$F[0]; ($id,$class)=split/-/,$ID[0]; print join("\t",($ID[0],$F[-1]/$F[-2]))."\n";' ${outpath}/intermediate/${prefix}.p.common_table > ${outpath}/intermediate/${prefix}.p.common_table.features
+perl -ne 'chomp; next if ($.<3); @F=split/,/; @ID=split/\s/,$F[0]; ($id,$class)=split/-/,$ID[0]; print join("\t",($ID[0],$F[-1]/$F[-2]))."\n";' ${outpath}/intermediate/${prefix}.rmp.common_table > ${outpath}/intermediate/${prefix}.rmp.common_table.features
+perl -ne 'chomp; next if ($.<3); @F=split/,/; @ID=split/\s/,$F[0]; ($id,$class)=split/-/,$ID[0]; print join("\t",($ID[0],$F[-1]/$F[-2]))."\n";' ${outpath}/intermediate/${prefix}.r.common_table > ${outpath}/intermediate/${prefix}.r.common_table.features
+
+
+#prodigal
+prodigal -p meta -a ${outpath}/intermediate/${prefix}.aa -f gff -i ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta -o ${outpath}/intermediate/${prefix}.gff
+
+echo "hmmsearch --cpu 2 -E 1E-10 -o ${outpath}/intermediate/${prefix}.conjugation.hmmerout --domtblout ${outpath}/intermediate/${prefix}.conjugation.domtblout --noali ${db}/platon_db/conjugation ${outpath}/intermediate/${prefix}.aa" > ${outpath}/intermediate/${prefix}_hmmscan.sh
+echo "hmmsearch --cpu 2 -E 1E-10 -o ${outpath}/intermediate/${prefix}.mobilization.hmmerout --domtblout ${outpath}/intermediate/${prefix}.mobilization.domtblout --noali ${db}/platon_db/mobilization ${outpath}/intermediate/${prefix}.aa" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
+echo "hmmsearch --cpu 2 --cut_tc -o ${outpath}/intermediate/${prefix}.ncbifam-amr.hmmerout --domtblout ${outpath}/intermediate/${prefix}.ncbifam-amr.domtblout --noali ${db}/platon_db/ncbifam-amr ${outpath}/intermediate/${prefix}.aa" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
+echo "hmmsearch --cpu 2 -E 1E-10 -o ${outpath}/intermediate/${prefix}.replication.hmmerout --domtblout ${outpath}/intermediate/${prefix}.replication.domtblout --noali ${db}/platon_db/replication ${outpath}/intermediate/${prefix}.aa" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
+echo "blastn -db ${db}/platon_db/orit -query ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta -out ${outpath}/intermediate/${prefix}.orit.blastn.out -outfmt 6 -max_target_seqs 1 -num_threads 4" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
+echo "cmscan --cpu 4 --noali --nohmmonly --rfam --cut_tc --fmt 2 --oskip -o ${outpath}/intermediate/${prefix}.rRNA.cmscan.out --tblout ${outpath}/intermediate/${prefix}.rRNA.cmscan.tblout ${db}/platon_db/rRNA ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
+echo "diamond blastp --threads 4 --db ${db}/platon_db/mps.dmnd --out ${outpath}/intermediate/${prefix}.mps.dmnd.out --outfmt 6 --query ${outpath}/intermediate/${prefix}.aa --subject-cover 80 --max-target-seqs 1" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
+
+parallel -j 7 :::: ${outpath}/intermediate/${prefix}_hmmscan.sh
+
+#find conjugation
+perl /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/getFeatDomTbl.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.conjugation.domtblout > ${outpath}/intermediate/${prefix}.conjugation.domtblout.feature
+
+#find mobilization
+perl /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/getFeatDomTbl.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.mobilization.domtblout > ${outpath}/intermediate/${prefix}.mobilization.domtblout.feature
+
+#ncbifam-amr
+perl /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/getFeatDomTbl.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.ncbifam-amr.domtblout > ${outpath}/intermediate/${prefix}.ncbifam-amr.domtblout.feature
+
+#replication
+perl /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/getFeatDomTbl.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.replication.domtblout > ${outpath}/intermediate/${prefix}.replication.domtblout.feature
+
+#MPS - RDS score
+perl /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/getFeatMDS.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.mps.dmnd.out /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/platon_db/mps.tsv > ${outpath}/intermediate/${prefix}.mps.rds.feature
+
+perl /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/getFeatBlastn.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.orit.blastn.out > ${outpath}/intermediate/${prefix}.orit.feature
+
+#rRNA
+perl /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/getFeatRiboRNA.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.rRNA.cmscan.tblout > ${outpath}/intermediate/${prefix}.rRNA.feature
+
+#merge features
+Rscript /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/mergeFeatsPredict.R \
+	${outpath}/intermediate/${prefix}.seqkit \
+	${outpath}/intermediate/${prefix}.r.common_table.features \
+	${outpath}/intermediate/${prefix}.rmp.common_table.features \
+	${outpath}/intermediate/${prefix}.p.common_table.features \
+	${outpath}/intermediate/${prefix}.pmr.common_table.features \
+	${outpath}/intermediate/${prefix}.conjugation.domtblout.feature \
+	${outpath}/intermediate/${prefix}.mobilization.domtblout.feature \
+	${outpath}/intermediate/${prefix}.mps.rds.feature \
+	${outpath}/intermediate/${prefix}.ncbifam-amr.domtblout.feature \
+	${outpath}/intermediate/${prefix}.orit.feature \
+	${outpath}/intermediate/${prefix}.replication.domtblout.feature \
+	${outpath}/intermediate/${prefix}.rRNA.feature \
+	${outpath}/intermediate/${prefix}.allFeatures
+
+
+#Model predict
+Rscript /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/predict_by_rpmodel.R ${db}/All.sample6w.filter.features.rmGC.2class.rfmodel.RData ${outpath}/intermediate/${prefix}.allFeatures
+
+cat ${outpath}/intermediate/${prefix}.allFeatures.plasmer.predClass.tsv ${outpath}/intermediate/${prefix}.plasmer.length.class > ${outpath}/results/${prefix}.plasmer.predClass.tsv
+
+#extract plasmids sequences
+python /share/pasteur/zhuqh/lung_microbiome/chromosome_plasmid/scripts/plasmer/extract_predPlasmids_seqs.py ${genome} ${outpath}/results/${prefix}.plasmer.predClass.tsv ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
+#annotate plasmids
+kraken2 --use-names --threads ${threads} --db ${db}/ncbiPlasmids --report ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.report --output ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
+cut -f2,3 ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out > ${outpath}/results/${prefix}.plasmer.predPlasmids.taxon
+
