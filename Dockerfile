@@ -35,7 +35,10 @@ RUN git clone https://github.com/DerrickWood/kraken2.git && \
 RUN cd /usr/bin/kraken2 && \
 	ls
 
-RUN cd /usr/bin/infernal && \
+RUN cd /usr/bin/infernal/bin && \
+	ls
+
+RUN cd /usr/bin/infernal/share && \
 	ls
 
 FROM ubuntu:22.04
@@ -56,9 +59,9 @@ RUN apt-get update && \
         parallel hmmer python3.10 r-base libgomp1 && \
 	apt-get clean
 
-ENV PATH="/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
+ENV PATH="/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 
-RUN kmer-db
+RUN cmscan
 RUN R --version
 
-ENTRYPOINT ["kmer-db"]
+ENTRYPOINT ["cmscan"]
