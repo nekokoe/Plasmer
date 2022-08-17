@@ -20,8 +20,23 @@ RUN git clone https://github.com/refresh-bio/kmer-db && \
 	cd kmer-db && \
 	make -j8
 
-RUN wget "http://eddylab.org/software/infernal/infernal.tar.gz" && tar zxf infernal.tar.gz && cd infernal-1.1.4 && ./configure && make -j8 && \
-	make check && pwd && ls 
+RUN wget "http://eddylab.org/software/infernal/infernal.tar.gz" && \
+	tar zxf infernal.tar.gz && \
+	cd infernal-1.1.4 && \
+	./configure --prefix /usr/bin/infernal && \
+	make -j8 && \
+	make check && \
+	make install
+
+RUN git clone https://github.com/DerrickWood/kraken2.git && \
+	cd kraken2 && \
+	./install_kraken2.sh /usr/bin/kraken2
+
+RUN cd /usr/bin/kraken2 && \
+	ls
+
+RUN cd /usr/bin/infernal && \
+	ls
 
 FROM ubuntu:22.04
 MAINTAINER iskoldt-X
@@ -31,17 +46,15 @@ COPY --from=builder /usr/bin/diamond /usr/bin/
 COPY --from=builder /usr/local/bin/prodigal /usr/local/bin/
 COPY --from=builder /tmp/blast/ncbi-blast-2.10.1+ /usr/local/bin/blast
 COPY --from=builder /kmer-db /usr/bin/kmer-db
+COPY --from=builder /usr/bin/infernal /usr/bin/infernal
+COPY --from=builder /usr/bin/kraken2 /usr/bin/kraken2
 
 ENV TZ=Etc/UTC
 RUN apt-get update && \
 	DEBIAN_FRONTEND=nointeractive \
         apt-get install --no-install-suggests --no-install-recommends --yes\
-        parallel hmmer python3.10 r-base libgomp1
-# && \
-#	apt-get upgrade -y libstdc++6 && \
-#	apt-get update -y && \
-#	apt-get upgrade -y && \
-#	apt-get dist-upgrade -y
+        parallel hmmer python3.10 r-base libgomp1 && \
+	apt-get clean
 
 ENV PATH="/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 
