@@ -29,20 +29,23 @@ MAINTAINER iskoldt-X
 COPY --from=builder /usr/bin/seqkit /usr/bin/
 COPY --from=builder /usr/bin/diamond /usr/bin/
 COPY --from=builder /usr/local/bin/prodigal /usr/local/bin/
-COPY --from=builder /tmp/blast/ncbi-blast-2.10.1+/bin/ /usr/local/bin/
-COPY --from=builder /kmer-db /usr/bin/
+COPY --from=builder /tmp/blast/ncbi-blast-2.10.1+ /usr/local/bin/blast
+COPY --from=builder /kmer-db /usr/bin/kmer-db
 
+ENV TZ=Etc/UTC
 RUN apt-get update && \
+	DEBIAN_FRONTEND=nointeractive \
         apt-get install --no-install-suggests --no-install-recommends --yes\
-        parallel hmmer libgomp1 
+        parallel hmmer python3.10 r-base libgomp1
 # && \
 #	apt-get upgrade -y libstdc++6 && \
 #	apt-get update -y && \
 #	apt-get upgrade -y && \
 #	apt-get dist-upgrade -y
 
-ENV PATH="/usr/bin/kmer-db:${PATH}"
+ENV PATH="/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 
 RUN kmer-db
+RUN R --version
 
 ENTRYPOINT ["kmer-db"]
