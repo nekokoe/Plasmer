@@ -32,15 +32,6 @@ RUN git clone https://github.com/DerrickWood/kraken2.git && \
 	cd kraken2 && \
 	./install_kraken2.sh /usr/bin/kraken2
 
-RUN cd /usr/bin/kraken2 && \
-	ls
-
-RUN cd /usr/bin/infernal/bin && \
-	ls
-
-RUN cd /usr/bin/infernal/share && \
-	ls
-
 FROM ubuntu:22.04
 MAINTAINER iskoldt-X
 
