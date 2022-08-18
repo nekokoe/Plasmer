@@ -80,16 +80,14 @@ if [ ! -d ${outpath} ];then
 	mkdir ${outpath}
 	mkdir ${outpath}/intermediate
 	mkdir ${outpath}/results
-#	else
-#	rm -rf ${outpath}
-#	mkdir ${outpath}
-#	mkdir ${outpath}/intermediate
-#	mkdir ${outpath}/results
+	else
+	mkdir ${outpath}/intermediate
+	mkdir ${outpath}/results
 fi
 
 seqkit fx2tab --gc --gc-skew --length --only-id --name ${genome} > ${outpath}/intermediate/${prefix}.seqkit
 
-python ${script_Dir}/check_length.py ${genome} ${outpath}/intermediate/${prefix}.seqkit ${outpath}/intermediate/${prefix}.plasmer.length.class ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta
+python3 ${script_Dir}/check_length.py ${genome} ${outpath}/intermediate/${prefix}.seqkit ${outpath}/intermediate/${prefix}.plasmer.length.class ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta
 
 echo ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta > ${outpath}/intermediate/${prefix}.sample.list
 
@@ -161,7 +159,7 @@ Rscript ${script_Dir}/predict_by_rpmodel.R ${db}/All.sample6w.filter.features.rm
 cat ${outpath}/intermediate/${prefix}.allFeatures.plasmer.predClass.tsv ${outpath}/intermediate/${prefix}.plasmer.length.class > ${outpath}/results/${prefix}.plasmer.predClass.tsv
 
 #extract plasmids sequences
-python ${script_Dir}/extract_predPlasmids_seqs.py ${genome} ${outpath}/results/${prefix}.plasmer.predClass.tsv ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
+python3 ${script_Dir}/extract_predPlasmids_seqs.py ${genome} ${outpath}/results/${prefix}.plasmer.predClass.tsv ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
 #annotate plasmids
 kraken2 --use-names --threads ${threads} --db ${db}/ncbiPlasmids --report ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.report --output ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
 cut -f2,3 ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out > ${outpath}/results/${prefix}.plasmer.predPlasmids.taxon
