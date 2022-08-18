@@ -42,17 +42,18 @@ COPY --from=builder /tmp/blast/ncbi-blast-2.10.1+ /usr/local/bin/blast
 COPY --from=builder /kmer-db /usr/bin/kmer-db
 COPY --from=builder /usr/bin/infernal /usr/bin/infernal
 COPY --from=builder /usr/bin/kraken2 /usr/bin/kraken2
+COPY . /
 
 ENV TZ=Etc/UTC
 RUN apt-get update && \
 	DEBIAN_FRONTEND=nointeractive \
         apt-get install --no-install-suggests --no-install-recommends --yes\
         parallel hmmer python3.10 r-base libgomp1 && \
-	apt-get clean
+	apt-get clean && \
+	alias python=/usr/bin/python3.10
 
 ENV PATH="/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 
-RUN cmscan
-RUN R --version
+RUN /scripts/Plasmer
 
 ENTRYPOINT ["cmscan"]
