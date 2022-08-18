@@ -20,9 +20,9 @@ RUN git clone https://github.com/refresh-bio/kmer-db && \
 	cd kmer-db && \
 	make -j8
 
-RUN wget "http://eddylab.org/software/infernal/infernal.tar.gz" && \
-	tar zxf infernal.tar.gz && \
-	cd infernal-1.1.4 && \
+RUN wget "http://eddylab.org/software/infernal/infernal.tar.gz" -O /tmp/infernal.tar.gz && \
+	tar zxvf /tmp/infernal.tar.gz -C /tmp && \
+	cd /tmp/infernal-1.1.4 && \
 	./configure --prefix /usr/bin/infernal && \
 	make -j8 && \
 	make check && \
