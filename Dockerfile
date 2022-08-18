@@ -73,7 +73,6 @@ RUN apt-get update && \
 	alias python=/usr/bin/python3.10
 
 COPY --from=builder /opt/R /opt/R
-COPY --from=builder /usr/local/lib/R/site-library /usr/local/lib/R/site-library
 
 ENV PATH="/opt/R/bin:/scripts/Plasmer:/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 
