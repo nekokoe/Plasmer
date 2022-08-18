@@ -32,6 +32,26 @@ RUN git clone https://github.com/DerrickWood/kraken2.git && \
 	cd kraken2 && \
 	./install_kraken2.sh /usr/bin/kraken2
 
+RUN apt-get update && \
+	export R_VERSION=4.2.0 && \
+	wget "https://cran.rstudio.com/src/base/R-4/R-${R_VERSION}.tar.gz" -O /tmp/R-${R_VERSION}.tar.gz && \
+	tar zxvf /tmp/R-${R_VERSION}.tar.gz -C /tmp && \
+	cd /tmp/R-${R_VERSION} && \
+	./configure \
+	--prefix=/opt/R \
+	--enable-memory-profiling \
+	--enable-R-shlib \
+	--with-blas \
+	--with-lapack && \
+	make -j8 && \
+	make install &&\
+	ln -s /opt/R/bin/R /usr/local/bin/R && \
+	ln -s /opt/R/bin/Rscript /usr/local/bin/Rscript
+
+COPY . /
+
+RUN Rscript install.R
+
 FROM ubuntu:22.04
 MAINTAINER iskoldt-X
 
@@ -48,12 +68,13 @@ ENV TZ=Etc/UTC
 RUN apt-get update && \
 	DEBIAN_FRONTEND=nointeractive \
         apt-get install --no-install-suggests --no-install-recommends --yes\
-        parallel hmmer python3.10 r-base libgomp1 && \
+        parallel hmmer python3.10 libgomp1 && \
 	apt-get clean && \
 	alias python=/usr/bin/python3.10
 
-ENV PATH="/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
+COPY --from=builder /opt/R /opt/R
+COPY --from=builder /usr/local/lib/R/site-library /usr/local/lib/R/site-library
 
-RUN /scripts/Plasmer
+ENV PATH="/opt/R/bin:/scripts/Plasmer:/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 
-ENTRYPOINT ["cmscan"]
+ENTRYPOINT ["Plasmer"]
