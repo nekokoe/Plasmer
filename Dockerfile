@@ -77,7 +77,7 @@ ENV TZ=Asia/Shanghai
 RUN apt-get update && \
 	DEBIAN_FRONTEND=nointeractive \
         apt-get install --no-install-suggests --no-install-recommends --yes\
-        parallel hmmer python3 libgomp1 && \
+        parallel hmmer libgomp1 && \
 	apt-get clean 
 
 COPY --from=builder /opt/R /opt/R
