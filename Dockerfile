@@ -48,13 +48,22 @@ RUN apt-get update && \
 	ln -s /opt/R/bin/R /usr/local/bin/R && \
 	ln -s /opt/R/bin/Rscript /usr/local/bin/Rscript
 
+RUN apt-get install --no-install-suggests --no-install-recommends --yes python3-venv python3-dev libpython3-dev && \
+	python3 -m venv /venv && \
+	/venv/bin/pip install --upgrade pip setuptools wheel
+
+RUN /venv/bin/pip install --disable-pip-version-check biopython
+
 COPY . /
 
 RUN Rscript install.R
 
+
+
 FROM ubuntu:22.04
 MAINTAINER iskoldt-X
 
+COPY --from=builder /venv /venv
 COPY --from=builder /usr/bin/seqkit /usr/bin/
 COPY --from=builder /usr/bin/diamond /usr/bin/
 COPY --from=builder /usr/local/bin/prodigal /usr/local/bin/
@@ -64,16 +73,15 @@ COPY --from=builder /usr/bin/infernal /usr/bin/infernal
 COPY --from=builder /usr/bin/kraken2 /usr/bin/kraken2
 COPY . /
 
-ENV TZ=Etc/UTC
+ENV TZ=Asia/Shanghai
 RUN apt-get update && \
 	DEBIAN_FRONTEND=nointeractive \
         apt-get install --no-install-suggests --no-install-recommends --yes\
-        parallel hmmer python3.10 libgomp1 && \
-	apt-get clean && \
-	alias python=/usr/bin/python3.10
+        parallel hmmer python3 libgomp1 && \
+	apt-get clean 
 
 COPY --from=builder /opt/R /opt/R
 
-ENV PATH="/opt/R/bin:/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
+ENV PATH="/venv/bin:/opt/R/bin:/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 
 CMD /scripts/Plasmer -h
