@@ -74,6 +74,6 @@ RUN apt-get update && \
 
 COPY --from=builder /opt/R /opt/R
 
-ENV PATH="/opt/R/bin:/scripts/Plasmer:/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
+ENV PATH="/opt/R/bin:/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 
-ENTRYPOINT ["Plasmer"]
+CMD /scripts/Plasmer -h
