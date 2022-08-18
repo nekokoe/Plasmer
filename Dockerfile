@@ -32,38 +32,9 @@ RUN git clone https://github.com/DerrickWood/kraken2.git && \
 	cd kraken2 && \
 	./install_kraken2.sh /usr/bin/kraken2
 
-RUN apt-get update && \
-	export R_VERSION=4.2.0 && \
-	wget "https://cran.rstudio.com/src/base/R-4/R-${R_VERSION}.tar.gz" -O /tmp/R-${R_VERSION}.tar.gz && \
-	tar zxvf /tmp/R-${R_VERSION}.tar.gz -C /tmp && \
-	cd /tmp/R-${R_VERSION} && \
-	./configure \
-	--prefix=/opt/R \
-	--enable-memory-profiling \
-	--enable-R-shlib \
-	--with-blas \
-	--with-lapack && \
-	make -j8 && \
-	make install &&\
-	ln -s /opt/R/bin/R /usr/local/bin/R && \
-	ln -s /opt/R/bin/Rscript /usr/local/bin/Rscript
-
-RUN apt-get install --no-install-suggests --no-install-recommends --yes python3-venv python3-dev libpython3-dev && \
-	python3 -m venv /venv && \
-	/venv/bin/pip install --upgrade pip setuptools wheel
-
-RUN /venv/bin/pip install --disable-pip-version-check biopython
-
-COPY . /
-
-RUN Rscript install.R
-
-
-
-FROM ubuntu:22.04
+FROM gcc:12
 MAINTAINER iskoldt-X
 
-COPY --from=builder /venv /venv
 COPY --from=builder /usr/bin/seqkit /usr/bin/
 COPY --from=builder /usr/bin/diamond /usr/bin/
 COPY --from=builder /usr/local/bin/prodigal /usr/local/bin/
@@ -77,11 +48,27 @@ ENV TZ=Asia/Shanghai
 RUN apt-get update && \
 	DEBIAN_FRONTEND=nointeractive \
         apt-get install --no-install-suggests --no-install-recommends --yes\
-        parallel hmmer libgomp1 && \
-	apt-get clean 
+        parallel hmmer libgomp1 python3 python3-pip && \
+	apt-get clean && \
+	pip install biopython
 
-COPY --from=builder /opt/R /opt/R
+RUN export R_VERSION=4.2.0 && \
+        wget "https://cran.rstudio.com/src/base/R-4/R-${R_VERSION}.tar.gz" -O /tmp/R-${R_VERSION}.tar.gz && \
+        tar zxvf /tmp/R-${R_VERSION}.tar.gz -C /tmp && \
+        cd /tmp/R-${R_VERSION} && \
+        ./configure \
+        --prefix=/opt/R \
+        --enable-memory-profiling \
+        --enable-R-shlib \
+        --with-blas \
+        --with-lapack && \
+        make -j8 && \
+        make install &&\
+        ln -s /opt/R/bin/R /usr/local/bin/R && \
+        ln -s /opt/R/bin/Rscript /usr/local/bin/Rscript
 
-ENV PATH="/venv/bin:/opt/R/bin:/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
+RUN Rscript install.R
+
+ENV PATH="/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 
 CMD /scripts/Plasmer -h
