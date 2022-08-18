@@ -80,11 +80,11 @@ if [ ! -d ${outpath} ];then
 	mkdir ${outpath}
 	mkdir ${outpath}/intermediate
 	mkdir ${outpath}/results
-	else
-	rm -rf ${outpath}
-	mkdir ${outpath}
-	mkdir ${outpath}/intermediate
-	mkdir ${outpath}/results
+#	else
+#	rm -rf ${outpath}
+#	mkdir ${outpath}
+#	mkdir ${outpath}/intermediate
+#	mkdir ${outpath}/results
 fi
 
 seqkit fx2tab --gc --gc-skew --length --only-id --name ${genome} > ${outpath}/intermediate/${prefix}.seqkit
