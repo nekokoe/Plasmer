@@ -1,5 +1,6 @@
 # Plasmer
 
+An accurate and sensitive bacterial plasmid identification tool based on deep machine-learning of shared k-mers and genomic features![image](https://user-images.githubusercontent.com/99703980/187062400-d78e0d2c-50c5-4062-8409-ef7f7aa785e2.png)
 
 
 ## Run Plasmer in shell
