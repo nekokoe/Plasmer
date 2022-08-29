@@ -30,7 +30,33 @@ cd Plasmer
 ./Plasmer -h
 ```
 
+Usage:
+
+```
+yourplasmerpath/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
+```
+
+The parameters:
+
+```
+-h --help       Print the help info and exit.
+
+-v --version    Print the version info.
+
+-g --genome     The input fasta.
+
+-p --prefix     The prefix for the simulate reads.
+
+-d --db         The path of databases.
+
+-t --threads    Number of threads.
+
+-o --outpath    The outpath.
+```
+
 ## Run Plasmer by Docker
+
+With docker, you don't have to install any of the dependencies. See more about [Docker](https://www.docker.com/resources/what-container/)
 
 ```
 docker run -d  --name nekokoe \
