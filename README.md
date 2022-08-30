@@ -66,16 +66,13 @@ The parameters:
 -o --outpath    The outpath.
 ```
 
-## Install Plasmer with Anaconda
-
-Under construction. Please come back soon.
-
 
 ## Run Plasmer with Docker
 
 With docker, you don't have to install any of the dependencies. See more about [Docker](https://www.docker.com/resources/what-container/)
 
 Assuming the input FASTA file was deposited in {inputfilepath}/input.fasta
+
 Run the following command to get result in {outputfilepath}
 
 ```
