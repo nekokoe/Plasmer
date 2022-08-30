@@ -2,11 +2,11 @@
 
 An accurate and sensitive bacterial plasmid identification tool based on deep machine-learning of shared k-mers and genomic features.
 
-## Before running
+## Before Running
 
 Please download and decompress our pre-built database. The pre-built database is available at XXX.
 
-## Run Plasmer in shell
+## Run Plasmer in Shell
 
 We recommend [run Plasmer with Docker](https://github.com/nekokoe/Plasmer/blob/main/README.md#run-plasmer-with-docker).
 However, run Plasmer in shell on Linux is feasible.
