@@ -8,7 +8,9 @@ Please download and decompress our pre-built database. The pre-built database is
 
 ## Run Plasmer in shell
 
-We recommend [run Plasmer with Docker](). However, run Plasmer in shell on Linux is feasible. Be sure you installed all the required dependencies:
+We recommend [run Plasmer with Docker](https://github.com/nekokoe/Plasmer/blob/main/README.md#run-plasmer-with-docker).
+However, run Plasmer in shell on Linux is feasible.
+Be sure you installed all the required dependencies:
 
 ```
 seqkit 2.2.0
