@@ -2,7 +2,7 @@
 
 An accurate and sensitive bacterial plasmid identification tool based on deep machine-learning of shared k-mers and genomic features.
 
-##Before running
+## Before running
 
 Please download and decompress our pre-built database. The pre-built database is available at XXX.
 
@@ -30,7 +30,6 @@ Download Plasmer from github:
 ```
 git clone https://github.com/nekokoe/Plasmer.git
 cd Plasmer
-
 ```
 
 Usage:
