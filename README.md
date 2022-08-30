@@ -2,9 +2,16 @@
 
 An accurate and sensitive bacterial plasmid identification tool based on deep machine-learning of shared k-mers and genomic features.
 
+## System Requirements
+
+1. Currently tested on CentOS 7 and Ubuntu 20.04, should be working on other Linux releases
+2. A minimum of 32GB system memory is required for kmer-db to load the databases
+3. The AVX instruction is required (required by kmer-db)
+
 ## Before Running
 
-Please download and decompress our pre-built database. The pre-built database is available at XXX.
+Please download and decompress our pre-built database. The pre-built database is available at https://doi.org/10.6084/m9.figshare.20709454.
+Provide the absolute path of database folder to -d parameter on the command line.
 
 ## Run Plasmer in Shell
 
@@ -37,8 +44,9 @@ cd Plasmer
 Usage:
 
 ```
-yourplasmerpath/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
+{absolutePathToPlasmer}/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
 ```
+Replace {absolutePathToPlasmer} with the path to Plasmer script.
 
 The parameters:
 
@@ -49,18 +57,26 @@ The parameters:
 
 -g --genome     The input fasta.
 
--p --prefix     The prefix for the simulate reads.
+-p --prefix     The prefix for intermediate files and results.
 
--d --db         The path of databases.
+-d --db         The path of pre-built Plasmer databases.
 
 -t --threads    Number of threads.
 
 -o --outpath    The outpath.
 ```
 
+## Install Plasmer with Anaconda
+
+Under construction. Please come back soon.
+
+
 ## Run Plasmer with Docker
 
 With docker, you don't have to install any of the dependencies. See more about [Docker](https://www.docker.com/resources/what-container/)
+
+Assuming the input FASTA file was deposited in {inputfilepath}/input.fasta
+Run the following command to get result in {outputfilepath}
 
 ```
 docker run -d  --name nekokoe \
@@ -69,7 +85,7 @@ docker run -d  --name nekokoe \
 	-v {databasepath}:/db \
 	 nekokoe/plasmer:latest \
 	/bin/sh /scripts/Plasmer \
-	-g /input/thefastafile \
+	-g /input/input.fasta \
 	-p {prefix} \
 	-d /db \
 	-t {threadnumber} \
