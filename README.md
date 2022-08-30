@@ -2,14 +2,17 @@
 
 An accurate and sensitive bacterial plasmid identification tool based on deep machine-learning of shared k-mers and genomic features.
 
+##Before running
+
+Please download and decompress our pre-built database. The pre-built database is available at XXX.
 
 ## Run Plasmer in shell
 
-Be sure you installed all the required dependencies:
+We recommend run Plasmer with Docker. However, run Plasmer in shell on Linux is feasible. Be sure you installed all the required dependencies:
 
 ```
 seqkit 2.2.0
-python 3.10.4 （gzip；os；sys；Bio）
+python 3.10.4 （gzip; os; sys; Bio）
 perl v5.26.2
 kmer-db 1.9.4
 Prodigal V2.6.3
@@ -19,7 +22,7 @@ INFERNAL 1.1.4
 diamond v2.0.8.146
 GNU Parallel 20220722
 Kraken version 2.1.2
-R version 4.2.0 （hash；randomForest 4.7-1.1）
+R version 4.2.0 （hash; randomForest 4.7-1.1）
 ```
 
 Download Plasmer from github:
@@ -27,7 +30,7 @@ Download Plasmer from github:
 ```
 git clone https://github.com/nekokoe/Plasmer.git
 cd Plasmer
-./Plasmer -h
+
 ```
 
 Usage:
