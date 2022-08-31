@@ -11,13 +11,17 @@ An accurate and sensitive bacterial plasmid identification tool based on deep ma
 ## Before Running
 
 Please download and decompress our pre-built database. 
+
 The pre-built database is available at https://doi.org/10.6084/m9.figshare.20709454.
+
 Provide the absolute path of database folder to -d parameter on the command line.
 
 ## Run Plasmer in Shell
 
 We recommend [run Plasmer with Docker](https://github.com/nekokoe/Plasmer/blob/main/README.md#run-plasmer-with-docker).
+
 However, run Plasmer in shell on Linux is feasible.
+
 Be sure you installed all the required dependencies:
 
 ```
@@ -93,7 +97,11 @@ docker run -d --rm --name plasmer \
 
 Replace with your own input:
 `{inputfilepath}`  : Absolute path contains `input.fasta` in your file system
+
 `{outputfilepath}` :  Absolute path for output in your file system
+
 `{databasepath}`   : Absolute path for the downloaded pre-built Plasmer database
+
 `{prefix}`         : Prefix for intermediate and output files
+
 `{threadnumber}`   : Number of CPUs wish to use
