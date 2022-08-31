@@ -44,9 +44,9 @@ cd Plasmer
 Usage:
 
 ```
-{absolutePathToPlasmer}/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
+`{absolutePathToPlasmer}`/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
 ```
-Replace {absolutePathToPlasmer} with the path to Plasmer script.
+Replace `{absolutePathToPlasmer}` with the path to Plasmer script.
 
 The parameters:
 
@@ -69,22 +69,23 @@ The parameters:
 
 ## Run Plasmer with Docker
 
-With docker, you don't have to install any of the dependencies. See more about [Docker](https://www.docker.com/resources/what-container/)
+With docker, you don't have to install any of the dependencies. See more about [Docker](https://hub.docker.com/repository/docker/nekokoe/plasmer)
+
 
 Assuming the input FASTA file was deposited in {inputfilepath}/input.fasta
 
 Run the following command to get result in {outputfilepath}
 
 ```
-docker run -d  --name nekokoe \
-	-v {inputfilepath}:/input \
-	-v {outputfilepath}:/output \
-	-v {databasepath}:/db \
+docker run -d --rm --name plasmer \
+	-v `{inputfilepath}`:/input \
+	-v `{outputfilepath}`:/output \
+	-v `{databasepath}`:/db \
 	 nekokoe/plasmer:latest \
 	/bin/sh /scripts/Plasmer \
 	-g /input/input.fasta \
-	-p {prefix} \
+	-p `{prefix}` \
 	-d /db \
-	-t {threadnumber} \
+	-t `{threadnumber}` \
 	-o /output
 ```
