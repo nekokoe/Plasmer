@@ -60,15 +60,15 @@ The parameters:
 
 -v --version    Print the version info.
 
--g --genome     The input fasta.
+-g --genome     The input fasta. [required]
 
--p --prefix     The prefix for intermediate files and results.
+-p --prefix     The prefix for intermediate files and results. [Default: output]
 
--d --db         The path of pre-built Plasmer databases.
+-d --db         The path of pre-built Plasmer databases. [required]
 
--t --threads    Number of threads.
+-t --threads    Number of threads. [Default: 8]
 
--o --outpath    The outpath.
+-o --outpath    The outpath. [required]
 ```
 
 
