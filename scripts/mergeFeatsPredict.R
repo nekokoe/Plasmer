@@ -1,6 +1,6 @@
 args <- commandArgs(T)
 
-print (args)
+#print (args)
 
 seqkitfile <- args[1]
 chromosomek18 <- args[2]

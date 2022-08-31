@@ -9,15 +9,15 @@ library(randomForest)
 
 alldata <- read.table(contigFeatures,sep="\t",header=T,row.names=1)
 
-colnames(alldata)
+#colnames(alldata)
 
 data.rf <- useddata.rf
 
-rownames(useddata.rf$importance)
+#rownames(useddata.rf$importance)
 
 alldata <- alldata[,rownames(useddata.rf$importance)]
 
-colnames(alldata)
+#colnames(alldata)
 
 alldata.pred.class <- predict(data.rf, alldata)
 alldata.pred.prob <- predict(data.rf, alldata,type="prob")
