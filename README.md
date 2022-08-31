@@ -105,3 +105,15 @@ Replace with your own input:
 `{prefix}`         : Prefix for intermediate and output files
 
 `{threadnumber}`   : Number of CPUs wish to use
+
+## Output
+
+In the outpath/results, 4 files are generated, including:
+
+prefix.plasmer.predProb.tsv: The probability of each contig classified to chromosome and plasmid.
+
+prefix.plasmer.predClass.tsv: The class of each contig.
+
+prefix.plasmer.predPlasmids.taxon: The taxonomy of each predicted plasmid contig.
+
+prefix.plasmer.predPlasmids.fa: The sequences of predicted plasmid contigs.
