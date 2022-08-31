@@ -119,3 +119,8 @@ In the outpath/results, 4 files are generated, including:
 
   prefix.plasmer.predPlasmids.fa: The sequences of predicted plasmid contigs.
 ```
+
+## Feedback
+
+Your feedback, bug-report and suggestions are welcomed to nekokoe@qq.com and husn@im.ac.cn
+
