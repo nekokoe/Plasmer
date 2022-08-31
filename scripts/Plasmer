@@ -12,15 +12,15 @@ help()
 
 		-v --version    Print the version info.
 
-		-g --genome     The input fasta.
+		-g --genome     The input fasta. [required]
 
-		-p --prefix     The prefix for the simulate reads.
+		-p --prefix     The prefix of output. [Default: output]
 		
-		-d --db         The path of databases.
+		-d --db         The path of databases. [required]
 
-		-t --threads    Number of threads.
+		-t --threads    Number of threads. [Default: 8]
 
-		-o --outpath    The outpath.
+		-o --outpath    The outpath. [required]
 		
 		License: none
 	EOF
@@ -58,19 +58,23 @@ while true;do
 	esac
 done
 
+threads=${threads:-8}
+prefix=${prefix:-output}
+
 script_Dir=$(dirname $(readlink -f $0))
-echo $0
-echo $script_Dir
 
 if [ ! -s ${genome} ];then
 	echo "Genome is not found or empty!"
+	exit 1
 fi
 
 if [ ! -d ${db} ];then
+	exit 1
 	echo "db is not found or empty!"
 	else
 	if [ ! -s ${db}/list ];then
 		echo "db/list is not found or empty!"
+		exit 1
 		else
 			bash ${script_Dir}/checkDB.sh ${db}/list
 	fi
@@ -85,7 +89,21 @@ if [ ! -d ${outpath} ];then
 	mkdir ${outpath}/results
 fi
 
+for sw in seqkit python3 perl kmer-db prodigal hmmsearch blastn cmscan diamond parallel kraken2 Rscript
+do
+	if ! [[ -e $(which ${sw}) ]]; 
+	then 
+		echo ${sw} not installed;
+		exit 1
+	fi
+done
+
 seqkit fx2tab --gc --gc-skew --length --only-id --name ${genome} > ${outpath}/intermediate/${prefix}.seqkit
+
+if [ ! -s ${outpath}/intermediate/${prefix}.seqkit ];then
+	echo "seqkit error!"
+	exit 1
+fi
 
 python3 ${script_Dir}/check_length.py ${genome} ${outpath}/intermediate/${prefix}.seqkit ${outpath}/intermediate/${prefix}.plasmer.length.class ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta
 
@@ -114,7 +132,7 @@ echo "blastn -db ${db}/platon_db/orit -query ${outpath}/intermediate/${prefix}.p
 echo "cmscan --cpu 4 --noali --nohmmonly --rfam --cut_tc --fmt 2 --oskip -o ${outpath}/intermediate/${prefix}.rRNA.cmscan.out --tblout ${outpath}/intermediate/${prefix}.rRNA.cmscan.tblout ${db}/platon_db/rRNA ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
 echo "diamond blastp --threads 4 --db ${db}/platon_db/mps.dmnd --out ${outpath}/intermediate/${prefix}.mps.dmnd.out --outfmt 6 --query ${outpath}/intermediate/${prefix}.aa --subject-cover 80 --max-target-seqs 1" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
 
-parallel -j 7 :::: ${outpath}/intermediate/${prefix}_hmmscan.sh
+parallel --will-cite -j 7 :::: ${outpath}/intermediate/${prefix}_hmmscan.sh
 
 #find conjugation
 perl ${script_Dir}/getFeatDomTbl.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.conjugation.domtblout > ${outpath}/intermediate/${prefix}.conjugation.domtblout.feature
@@ -164,3 +182,4 @@ python3 ${script_Dir}/extract_predPlasmids_seqs.py ${genome} ${outpath}/results/
 kraken2 --use-names --threads ${threads} --db ${db}/ncbiPlasmids --report ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.report --output ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
 cut -f2,3 ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out > ${outpath}/results/${prefix}.plasmer.predPlasmids.taxon
 
+mv ${outpath}/intermediate/${prefix}.allFeatures.plasmer.predProb.tsv ${outpath}/results/${prefix}.plasmer.predProb.tsv
