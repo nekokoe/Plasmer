@@ -3,9 +3,11 @@
 help()
 {
 	cat <<- EOF
-	Desc: Identifying plasmids contigs and assign taxonomy.
-	Usage: PlasMer -g input_fasta -p out_prefix -d db -t threads -o outpath
+	Plasmer - an accurate and sensitive bacterial plasmid identification tool based on machine-learning of shared k-mers and genomic features
+
+	Usage: Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
 	Author: Qianhui Zhu
+
 	The parameters:
 
 		-h --help       Print the help info and exit.
@@ -22,7 +24,9 @@ help()
 
 		-o --outpath    The outpath. [required]
 		
-		License: none
+	GitHub: https://github.com/nekokoe/Plasmer
+	License: CC-BY 4.0
+
 	EOF
 		exit 0
 }
@@ -30,7 +34,7 @@ help()
 version_info()
 {
 cat <<- EOF
-	PlasMer.sh v1.0 20220816
+	Plasmer v0.1 20220816
 EOF
 	exit 0
 }
@@ -61,19 +65,29 @@ done
 threads=${threads:-8}
 prefix=${prefix:-output}
 
+#check software
+for sw in seqkit python3 perl kmer-db prodigal hmmsearch blastn cmscan diamond parallel kraken2 Rscript
+do
+	if [ -z $(which ${sw}) ];then
+		echo "ERROR: required software ${sw} not properly installed"
+		exit 1
+	fi
+done
+
+
 script_Dir=$(dirname $(readlink -f $0))
 
 if [ ! -s ${genome} ];then
-	echo "Genome is not found or empty!"
+	echo "ERROR: Genome is not found or empty!"
 	exit 1
 fi
 
 if [ ! -d ${db} ];then
 	exit 1
-	echo "db is not found or empty!"
+	echo "ERROR: ${db} is not found or empty!"
 	else
 	if [ ! -s ${db}/list ];then
-		echo "db/list is not found or empty!"
+		echo "ERROR: ${db}/list is not found or empty!"
 		exit 1
 		else
 			bash ${script_Dir}/checkDB.sh ${db}/list
@@ -89,26 +103,19 @@ if [ ! -d ${outpath} ];then
 	mkdir ${outpath}/results
 fi
 
-for sw in seqkit python3 perl kmer-db prodigal hmmsearch blastn cmscan diamond parallel kraken2 Rscript
-do
-	if ! [[ -e $(which ${sw}) ]]; 
-	then 
-		echo ${sw} not installed;
-		exit 1
-	fi
-done
-
 seqkit fx2tab --gc --gc-skew --length --only-id --name ${genome} > ${outpath}/intermediate/${prefix}.seqkit
 
 if [ ! -s ${outpath}/intermediate/${prefix}.seqkit ];then
-	echo "seqkit error!"
+	echo "ERROR: seqkit didn't find any sequences! Please check your input file."
 	exit 1
 fi
 
+echo "Checking sequence length..."
 python3 ${script_Dir}/check_length.py ${genome} ${outpath}/intermediate/${prefix}.seqkit ${outpath}/intermediate/${prefix}.plasmer.length.class ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta
 
 echo ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta > ${outpath}/intermediate/${prefix}.sample.list
 
+echo "Generating k-mer features..."
 kmer-db new2all -t ${threads} -multisample-fasta ${db}/plsdb_minus_ncbi_representative.k25.kmer-db ${outpath}/intermediate/${prefix}.sample.list ${outpath}/intermediate/${prefix}.pmr.common_table
 kmer-db new2all -t ${threads} -multisample-fasta ${db}/plsdb.k25.kmer-db ${outpath}/intermediate/${prefix}.sample.list ${outpath}/intermediate/${prefix}.p.common_table
 kmer-db new2all -t ${threads} -multisample-fasta ${db}/ncbi_representative_minus_plsdb.k18.f0.1.kmer-db ${outpath}/intermediate/${prefix}.sample.list ${outpath}/intermediate/${prefix}.rmp.common_table
@@ -122,18 +129,25 @@ perl -ne 'chomp; next if ($.<3); @F=split/,/; @ID=split/\s/,$F[0]; ($id,$class)=
 
 
 #prodigal
+echo "Predicting gene with Prodigal..."
 prodigal -p meta -a ${outpath}/intermediate/${prefix}.aa -f gff -i ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta -o ${outpath}/intermediate/${prefix}.gff
 
 echo "hmmsearch --cpu 2 -E 1E-10 -o ${outpath}/intermediate/${prefix}.conjugation.hmmerout --domtblout ${outpath}/intermediate/${prefix}.conjugation.domtblout --noali ${db}/platon_db/conjugation ${outpath}/intermediate/${prefix}.aa" > ${outpath}/intermediate/${prefix}_hmmscan.sh
 echo "hmmsearch --cpu 2 -E 1E-10 -o ${outpath}/intermediate/${prefix}.mobilization.hmmerout --domtblout ${outpath}/intermediate/${prefix}.mobilization.domtblout --noali ${db}/platon_db/mobilization ${outpath}/intermediate/${prefix}.aa" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
 echo "hmmsearch --cpu 2 --cut_tc -o ${outpath}/intermediate/${prefix}.ncbifam-amr.hmmerout --domtblout ${outpath}/intermediate/${prefix}.ncbifam-amr.domtblout --noali ${db}/platon_db/ncbifam-amr ${outpath}/intermediate/${prefix}.aa" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
 echo "hmmsearch --cpu 2 -E 1E-10 -o ${outpath}/intermediate/${prefix}.replication.hmmerout --domtblout ${outpath}/intermediate/${prefix}.replication.domtblout --noali ${db}/platon_db/replication ${outpath}/intermediate/${prefix}.aa" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
-echo "blastn -db ${db}/platon_db/orit -query ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta -out ${outpath}/intermediate/${prefix}.orit.blastn.out -outfmt 6 -max_target_seqs 1 -num_threads 4" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
-echo "cmscan --cpu 4 --noali --nohmmonly --rfam --cut_tc --fmt 2 --oskip -o ${outpath}/intermediate/${prefix}.rRNA.cmscan.out --tblout ${outpath}/intermediate/${prefix}.rRNA.cmscan.tblout ${db}/platon_db/rRNA ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
-echo "diamond blastp --threads 4 --db ${db}/platon_db/mps.dmnd --out ${outpath}/intermediate/${prefix}.mps.dmnd.out --outfmt 6 --query ${outpath}/intermediate/${prefix}.aa --subject-cover 80 --max-target-seqs 1" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
+echo "blastn -db ${db}/platon_db/orit -query ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta -out ${outpath}/intermediate/${prefix}.orit.blastn.out -outfmt 6 -max_target_seqs 1 -num_threads ${threads}" > ${outpath}/intermediate/${prefix}_blastn.sh
+echo "cmscan --cpu 2 --noali --nohmmonly --rfam --cut_tc --fmt 2 --oskip -o ${outpath}/intermediate/${prefix}.rRNA.cmscan.out --tblout ${outpath}/intermediate/${prefix}.rRNA.cmscan.tblout ${db}/platon_db/rRNA ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta" >> ${outpath}/intermediate/${prefix}_hmmscan.sh
+echo "diamond blastp --threads ${threads} --db ${db}/platon_db/mps.dmnd --out ${outpath}/intermediate/${prefix}.mps.dmnd.out --outfmt 6 --query ${outpath}/intermediate/${prefix}.aa --subject-cover 80 --max-target-seqs 1" > ${outpath}/intermediate/${prefix}_diamond.sh
 
-parallel --will-cite -j 7 :::: ${outpath}/intermediate/${prefix}_hmmscan.sh
+echo "Searching with BLASTN..."
+parallel --will-cite -j 1 :::: ${outpath}/intermediate/${prefix}_blastn.sh
+echo "Searching with DIAMOND..."
+parallel --will-cite -j 1 :::: ${outpath}/intermediate/${prefix}_diamond.sh
+echo "Searching with hmmsearch..."
+parallel --will-cite -j ${threads} :::: ${outpath}/intermediate/${prefix}_hmmscan.sh
 
+echo "Generating genomic features..."
 #find conjugation
 perl ${script_Dir}/getFeatDomTbl.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.conjugation.domtblout > ${outpath}/intermediate/${prefix}.conjugation.domtblout.feature
 
@@ -154,6 +168,7 @@ perl ${script_Dir}/getFeatBlastn.pl ${outpath}/intermediate/${prefix}.plasmer.le
 #rRNA
 perl ${script_Dir}/getFeatRiboRNA.pl ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta ${outpath}/intermediate/${prefix}.rRNA.cmscan.tblout > ${outpath}/intermediate/${prefix}.rRNA.feature
 
+echo "Merging features..."
 #merge features
 Rscript ${script_Dir}/mergeFeatsPredict.R \
 	${outpath}/intermediate/${prefix}.seqkit \
@@ -171,6 +186,7 @@ Rscript ${script_Dir}/mergeFeatsPredict.R \
 	${outpath}/intermediate/${prefix}.allFeatures
 
 
+echo "Predicting..."
 #Model predict
 Rscript ${script_Dir}/predict_by_rpmodel.R ${db}/All.sample6w.filter.features.rmGC.2class.rfmodel.RData ${outpath}/intermediate/${prefix}.allFeatures
 
@@ -178,8 +194,14 @@ cat ${outpath}/intermediate/${prefix}.allFeatures.plasmer.predClass.tsv ${outpat
 
 #extract plasmids sequences
 python3 ${script_Dir}/extract_predPlasmids_seqs.py ${genome} ${outpath}/results/${prefix}.plasmer.predClass.tsv ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
+
+echo "Classifying taxonomy..."
 #annotate plasmids
 kraken2 --use-names --threads ${threads} --db ${db}/ncbiPlasmids --report ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.report --output ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
 cut -f2,3 ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out > ${outpath}/results/${prefix}.plasmer.predPlasmids.taxon
 
 mv ${outpath}/intermediate/${prefix}.allFeatures.plasmer.predProb.tsv ${outpath}/results/${prefix}.plasmer.predProb.tsv
+
+echo "Done!"
+echo "See your result in ${outpath}/results/"
+
