@@ -110,10 +110,12 @@ Replace with your own input:
 
 In the outpath/results, 4 files are generated, including:
 
-prefix.plasmer.predProb.tsv: The probability of each contig classified to chromosome and plasmid.
+```
+	prefix.plasmer.predProb.tsv: The probability of each contig classified to chromosome and plasmid.
 
-prefix.plasmer.predClass.tsv: The class of each contig.
+	prefix.plasmer.predClass.tsv: The class of each contig.
 
-prefix.plasmer.predPlasmids.taxon: The taxonomy of each predicted plasmid contig.
+	prefix.plasmer.predPlasmids.taxon: The taxonomy of each predicted plasmid contig.
 
-prefix.plasmer.predPlasmids.fa: The sequences of predicted plasmid contigs.
+	prefix.plasmer.predPlasmids.fa: The sequences of predicted plasmid contigs.
+```
