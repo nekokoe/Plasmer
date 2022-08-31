@@ -10,7 +10,8 @@ An accurate and sensitive bacterial plasmid identification tool based on deep ma
 
 ## Before Running
 
-Please download and decompress our pre-built database. The pre-built database is available at https://doi.org/10.6084/m9.figshare.20709454.
+Please download and decompress our pre-built database. 
+The pre-built database is available at https://doi.org/10.6084/m9.figshare.20709454.
 Provide the absolute path of database folder to -d parameter on the command line.
 
 ## Run Plasmer in Shell
@@ -44,7 +45,7 @@ cd Plasmer
 Usage:
 
 ```
-`{absolutePathToPlasmer}`/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
+{absolutePathToPlasmer}/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
 ```
 Replace `{absolutePathToPlasmer}` with the path to Plasmer script.
 
@@ -72,20 +73,27 @@ The parameters:
 With docker, you don't have to install any of the dependencies. See more about [Docker](https://hub.docker.com/repository/docker/nekokoe/plasmer)
 
 
-Assuming the input FASTA file was deposited in {inputfilepath}/input.fasta
+Assuming the input FASTA file was deposited in `{inputfilepath}`/input.fasta
 
-Run the following command to get result in {outputfilepath}
+Run the following command to get result in `{outputfilepath}`
 
 ```
 docker run -d --rm --name plasmer \
-	-v `{inputfilepath}`:/input \
-	-v `{outputfilepath}`:/output \
-	-v `{databasepath}`:/db \
+	-v {inputfilepath}:/input \
+	-v {outputfilepath}:/output \
+	-v {databasepath}:/db \
 	 nekokoe/plasmer:latest \
 	/bin/sh /scripts/Plasmer \
 	-g /input/input.fasta \
-	-p `{prefix}` \
+	-p {prefix} \
 	-d /db \
-	-t `{threadnumber}` \
+	-t {threadnumber} \
 	-o /output
 ```
+
+Replace with your own input:
+`{inputfilepath}`  : Absolute path contains `input.fasta` in your file system
+`{outputfilepath}` :  Absolute path for output in your file system
+`{databasepath}`   : Absolute path for the downloaded pre-built Plasmer database
+`{prefix}`         : Prefix for intermediate and output files
+`{threadnumber}`   : Number of CPUs wish to use
