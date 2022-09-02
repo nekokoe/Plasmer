@@ -122,5 +122,5 @@ In the outpath/results, 4 files are generated, including:
 
 ## Feedback
 
-Your feedback, bug-report and suggestions are welcomed to nekokoe@qq.com and husn@im.ac.cn
+Your feedback, bug-report and suggestions are welcomed to nekokoe (at) qq.com and husn (at) im.ac.cn
 
