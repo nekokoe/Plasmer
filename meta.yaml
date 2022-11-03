@@ -1,23 +1,41 @@
 package:
-    name: Plasmer
-    version: 0.0
+    name: plasmer
+    version: "1.0"
 
 build:
-    skip: True # [py<35]
+    number: 1
+    script:
+        - "cp -r scripts $PREFIX/bin/plasmer"
+        - "chmod u+x $PREFIX/bin/plasmer"
+        - "cp -r scripts/ $PREFIX/bin/"
 
 source:
-    git_url: https://github.com/nekokoe/Plasmer.git
+    url: https://github.com/nekokoe/Plasmer/releases/download/conda/Plasmer.zip
 
 requirements:
     build:
-        - python
+        - python ==3.10.4
     run:
-        - python
-        - 'numpy <=1.15.0'
-        - 'scipy >=1.1.0'
-        - 'matplotlib >=2.2.3'
- 
-        
+        - python ==3.10.4
+        - biopython
+        - seqkit ==2.2.0
+        - perl ==5.26.2
+        - kmer-db ==1.9.4
+        - Prodigal ==2.6.3
+        - HMMER ==3.3.2
+        - BLAST ==2.10.1
+        - INFERNAL ==1.1.4
+        - diamond ==2.0.15
+        - Parallel
+        - Kraken2 ==2.1.2
+        - R ==4.2.0
+        - r-randomforest ==4.7_1.1
+        - r-hash
+
+test:
+    commands:
+        - $PREFIX/bin/plasmer/Plasmer -h
+
 about:
     home: https://github.com/nekokoe/Plasmer
     license: MIT
