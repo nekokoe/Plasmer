@@ -11,6 +11,7 @@ build:
 
 source:
     url: https://github.com/nekokoe/Plasmer/releases/download/conda/Plasmer.zip
+    sha256: 563862b4a4491d8b3a5f928d178b1cc13f51406367761aaec9f088c6c9de7421
 
 requirements:
     build:
