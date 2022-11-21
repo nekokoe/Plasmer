@@ -11,11 +11,11 @@ alldata <- read.table(contigFeatures,sep="\t",header=T,row.names=1)
 
 #colnames(alldata)
 
-#data.rf <- useddata.rf
+data.rf <- useddata.rf
 
 #rownames(useddata.rf$importance)
 
-alldata <- alldata[,rownames(data.rf$importance)]
+alldata <- alldata[,rownames(useddata.rf$importance)]
 
 #colnames(alldata)
 
