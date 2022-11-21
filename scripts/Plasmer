@@ -188,7 +188,7 @@ Rscript ${script_Dir}/mergeFeatsPredict.R \
 
 echo "Predicting..."
 #Model predict
-Rscript ${script_Dir}/predict_by_rpmodel.R ${db}/All.sample6w.filter.features.rmGC.2class.rfmodel.RData ${outpath}/intermediate/${prefix}.allFeatures
+Rscript ${script_Dir}/predict_by_rpmodel.R ${db}/All.rk18pk25.rp.all2class.per0.8OR10w.traindata.rfmodel.RData ${outpath}/intermediate/${prefix}.allFeatures
 
 cat ${outpath}/intermediate/${prefix}.allFeatures.plasmer.predClass.tsv ${outpath}/intermediate/${prefix}.plasmer.length.class > ${outpath}/results/${prefix}.plasmer.predClass.tsv
 
