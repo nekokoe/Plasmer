@@ -30,7 +30,14 @@ cd Plasmer
 ```
 
 
-Be sure you installed all the required dependencies:
+Be sure you installed all the required dependencies, they can be easily installed by conda:
+
+```
+conda env create -f environment.yml
+conda activate plasmer
+```
+
+The required dependencies:
 
 ```
 seqkit 2.2.0
