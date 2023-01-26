@@ -20,7 +20,15 @@ Provide the absolute path of database folder to -d parameter on the command line
 
 We recommend [run Plasmer with Docker](https://github.com/nekokoe/Plasmer/blob/main/README.md#run-plasmer-with-docker).
 
-However, run Plasmer in shell on Linux is feasible.
+However, run Plasmer in shell directly on Linux is feasible.
+
+Download Plasmer from github:
+
+```
+git clone https://github.com/nekokoe/Plasmer.git
+cd Plasmer
+```
+
 
 Be sure you installed all the required dependencies:
 
@@ -37,13 +45,6 @@ diamond v2.0.8.146
 GNU Parallel 20220722
 Kraken version 2.1.2
 R version 4.2.0 （hash; randomForest 4.7-1.1）
-```
-
-Download Plasmer from github:
-
-```
-git clone https://github.com/nekokoe/Plasmer.git
-cd Plasmer
 ```
 
 Usage:
