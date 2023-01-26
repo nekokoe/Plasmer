@@ -29,14 +29,6 @@ git clone https://github.com/nekokoe/Plasmer.git
 cd Plasmer
 ```
 
-
-Be sure you installed all the required dependencies, they can be easily installed by conda:
-
-```
-conda env create -f environment.yml
-conda activate plasmer
-```
-
 The required dependencies:
 
 ```
@@ -52,6 +44,13 @@ diamond v2.0.8.146
 GNU Parallel 20220722
 Kraken version 2.1.2
 R version 4.2.0 （hash; randomForest 4.7-1.1）
+```
+
+Be sure you installed all the required dependencies, they can be easily installed by conda:
+
+```
+conda env create -f environment.yml
+conda activate plasmer
 ```
 
 Usage:
