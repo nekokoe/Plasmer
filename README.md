@@ -49,7 +49,7 @@ R version 4.2.0 （hash; randomForest 4.7-1.1）
 Be sure you installed all the required dependencies, they can be easily installed by conda:
 
 ```
-conda env create -f environment.yml
+conda env create -f environment.yaml
 conda activate plasmer
 ```
 
