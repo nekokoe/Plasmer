@@ -1,5 +1,8 @@
 # Plasmer
 
+![Anaconda](https://anaconda.org/iskoldt/plasmer/badges/version.svg)
+
+
 An accurate and sensitive bacterial plasmid identification tool based on deep machine-learning of shared k-mers and genomic features.
 
 ## System Requirements
