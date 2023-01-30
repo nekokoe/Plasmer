@@ -24,7 +24,10 @@ Provide the absolute path of database folder to -d parameter on the command line
 
 We recommend [run Plasmer with Docker](https://github.com/nekokoe/Plasmer/blob/main/README.md#run-plasmer-with-docker).
 
-However, run Plasmer in shell directly on Linux is also feasible. You can simply install Plasmer using conda:
+
+However, run Plasmer in shell directly on Linux is also feasible.
+
+You can simply install Plasmer using conda:
 
 ```
 conda install -c iskoldt -c bioconda -c conda-forge -c defaults plasmer
@@ -63,7 +66,7 @@ conda env create -f environment.yaml
 conda activate plasmer
 ```
 
-Usage:
+## Usage
 
 ```
 {absolutePathToPlasmer}/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
