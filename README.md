@@ -1,6 +1,7 @@
 # Plasmer
 
-![Anaconda](https://anaconda.org/iskoldt/plasmer/badges/version.svg)
+<img src="https://anaconda.org/iskoldt/plasmer/badges/version.svg"/> <img src="https://img.shields.io/docker/pulls/nekokoe/plasmer.svg"/> <img src="https://img.shields.io/github/last-commit/nekokoe/Plasmer.svg"/> <img src="https://img.shields.io/github/license/nekokoe/Plasmer.svg"/> 
+
 
 
 An accurate and sensitive bacterial plasmid identification tool based on deep machine-learning of shared k-mers and genomic features.
@@ -23,7 +24,13 @@ Provide the absolute path of database folder to -d parameter on the command line
 
 We recommend [run Plasmer with Docker](https://github.com/nekokoe/Plasmer/blob/main/README.md#run-plasmer-with-docker).
 
-However, run Plasmer in shell directly on Linux is feasible.
+However, run Plasmer in shell directly on Linux is also feasible. You can simply install Plasmer using conda:
+
+```
+conda install -c iskoldt -c bioconda -c conda-forge -c defaults plasmer
+```
+
+Or you prefer to download it from github and solve the dependencies yourself.
 
 Download Plasmer from github:
 
@@ -49,7 +56,7 @@ Kraken version 2.1.2
 R version 4.2.0 （hash; randomForest 4.7-1.1）
 ```
 
-Be sure you installed all the required dependencies, they can be easily installed by conda:
+Be sure you installed all the required dependencies, they can also be easily installed by conda:
 
 ```
 conda env create -f environment.yaml
@@ -61,7 +68,7 @@ Usage:
 ```
 {absolutePathToPlasmer}/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
 ```
-Replace `{absolutePathToPlasmer}` with the path to Plasmer script.
+Replace `{absolutePathToPlasmer}/` with the path to Plasmer script, omit it if you install Plasmer directly using conda.
 
 The parameters:
 
