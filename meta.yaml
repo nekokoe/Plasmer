@@ -4,11 +4,20 @@ package:
 
 build:
     number: 1
-    script:
-        - "cp -r scripts $PREFIX/bin/plasmer"
-        - "chmod u+x $PREFIX/bin/plasmer"
-        - "cp -r scripts/ $PREFIX/bin/"
-
+    binary_relocation: True
+    always_include_files:
+        - bin/assign_taxon_labels.R
+        - bin/checkDB.sh
+        - bin/check_length.py
+        - bin/extract_predPlasmids_seqs.py
+        - bin/getFeatBlastn.pl
+        - bin/getFeatDomTbl.pl
+        - bin/getFeatMDS.pl
+        - bin/getFeatRiboRNA.pl
+        - bin/mergeFeatsPredict.R
+        - bin/Plasmer
+        - bin/predict_by_rpmodel.R
+        - bin/scaffolding.py
 source:
     url: https://github.com/nekokoe/Plasmer/releases/download/conda/Plasmer.zip
     sha256: 563862b4a4491d8b3a5f928d178b1cc13f51406367761aaec9f088c6c9de7421
@@ -35,7 +44,8 @@ requirements:
 
 test:
     commands:
-        - $PREFIX/bin/plasmer/Plasmer -h
+        - cd $PREFIX/bin && ls
+        - Plasmer -h
 
 about:
     home: https://github.com/nekokoe/Plasmer
