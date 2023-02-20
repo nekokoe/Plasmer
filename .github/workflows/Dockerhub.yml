@@ -29,6 +29,5 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          platforms: linux/amd64,linux/amd64/v2,linux/amd64/v3
           push: true
           tags: nekokoe/plasmer:latest
