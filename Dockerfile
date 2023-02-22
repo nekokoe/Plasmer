@@ -41,8 +41,8 @@ RUN apt-get update && \
         apt-get install --no-install-suggests --no-install-recommends --yes\
         parallel hmmer libgomp1 python3 python3-pip && \
 	apt-get clean && \
-	pip install biopython
-RUN export R_VERSION=4.2.0 && \
+	pip install biopython && \
+	export R_VERSION=4.2.0 && \
         wget "https://cran.rstudio.com/src/base/R-4/R-${R_VERSION}.tar.gz" -O /tmp/R-${R_VERSION}.tar.gz && \
         tar zxvf /tmp/R-${R_VERSION}.tar.gz -C /tmp && \
         cd /tmp/R-${R_VERSION} && \
@@ -55,7 +55,8 @@ RUN export R_VERSION=4.2.0 && \
         make -j8 && \
         make install &&\
         ln -s /opt/R/bin/R /usr/local/bin/R && \
-        ln -s /opt/R/bin/Rscript /usr/local/bin/Rscript
-RUN Rscript install.R
+        ln -s /opt/R/bin/Rscript /usr/local/bin/Rscript && \
+	cd / && \
+	Rscript install.R
 ENV PATH="/usr/bin/infernal/bin:/usr/bin/kraken2:/usr/bin/kmer-db:/usr/local/bin/blast/bin:/usr/bin/kmer-db:${PATH}"
 CMD /scripts/Plasmer -h
