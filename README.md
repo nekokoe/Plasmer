@@ -20,29 +20,24 @@ The pre-built database is available at https://doi.org/10.6084/m9.figshare.20709
 
 Provide the absolute path of database folder to -d parameter on the command line.
 
-## Run Plasmer in Shell
-
-We recommend [run Plasmer with Docker](https://github.com/nekokoe/Plasmer/blob/main/README.md#run-plasmer-with-docker).
 
 
-However, run Plasmer in shell directly on Linux is also feasible.
+## Installation
 
-You can simply install Plasmer using conda:
+We recommend [run Plasmer with Docker](https://github.com/nekokoe/Plasmer/blob/main/README.md#run-plasmer-with-docker), with Docker you do not need to figure out how to install Plasmer. However, run Plasmer in shell directly on Linux is also feasible.
+
+### Install Plasmer using conda
+
+You can simply install Plasmer using [conda](https://conda.io/):
 
 ```
 conda install -c iskoldt -c bioconda -c conda-forge -c defaults plasmer
 ```
+### Install Plasmer from scratch
 
-Or you prefer to download it from github and solve the dependencies yourself.
+If you do not use conda, here is the tutorial for you to install Plasmer from scratch:
 
-Download Plasmer from github:
-
-```
-git clone https://github.com/nekokoe/Plasmer.git
-cd Plasmer
-```
-
-The required dependencies:
+Be sure you installed all the required dependencies first, the required dependencies:
 
 ```
 seqkit 2.2.0
@@ -59,11 +54,18 @@ Kraken version 2.1.2
 R version 4.2.0 （hash; randomForest 4.7-1.1）
 ```
 
-Be sure you installed all the required dependencies, they can also be easily installed by conda:
+Then download Plasmer from GitHub:
 
 ```
-conda env create -f environment.yaml
-conda activate plasmer
+git clone https://github.com/nekokoe/Plasmer.git
+cd Plasmer
+export PATH=$PATH:$(pwd)
+```
+
+Add the current directory to your PATH environment variable permanently:
+
+```
+echo 'export PATH=$PATH:'$(pwd) >> ~/.bashrc && source ~/.bashrc
 ```
 
 ## Usage
