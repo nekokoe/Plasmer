@@ -98,10 +98,17 @@ The parameters:
 
 With docker, you don't have to install any of the dependencies. See more about [Docker](https://hub.docker.com/repository/docker/nekokoe/plasmer)
 
+Download the Docker image first:
+
+```
+docker pull nekokoe/plasmer:latest
+```
 
 Assuming the input FASTA file was deposited in `{inputfilepath}`/input.fasta
 
 Run the following command to get result in `{outputfilepath}`
+
+You can replace `input.fasta` with the actual name of your file.
 
 ```
 docker run -d --rm --name plasmer \
@@ -128,6 +135,14 @@ Replace with your own input:
 
 `{threadnumber}`   : Number of CPUs wish to use
 
+### dockerrun_batch.sh
+
+We also provide a bash shell script that runs the Docker for you, if you have many input files in a directory.
+
+```
+bash dockerrun_batch.sh /input/files/path /output/files/path /database/path CPU_threads
+```
+
 ## Output
 
 In the outpath/results, 4 files are generated, including:
@@ -141,6 +156,7 @@ In the outpath/results, 4 files are generated, including:
 
   prefix.plasmer.predPlasmids.fa: The sequences of predicted plasmid contigs.
 ```
+
 
 ## Feedback
 
