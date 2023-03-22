@@ -12,7 +12,7 @@ jobs:
     - name: publish-to-conda
       uses: MichaelsJP/conda-package-publish-action@v1.1.0
       with:
-        subDir: '/'
+        subDir: '.'
         AnacondaToken: ${{ secrets.ANACONDA_TOKEN }}
         platforms: 'linux-64'
         override: true
