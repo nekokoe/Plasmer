@@ -1,13 +1,14 @@
 package:
     name: plasmer
-    version: "23.03.22"
+    version: {{ PACKAGE_VERSION }}
 
 build:
     number: 1
     binary_relocation: True
     always_include_files:
         - bin/assign_taxon_labels.R
-        - bin/checkDB.sh
+        - bin/customizedKraken2DB_check.sh
+        - bin/plasmerMainDB_check.sh
         - bin/check_length_by_input.py
         - bin/extract_predPlasmids_seqs.py
         - bin/getFeatBlastn.pl

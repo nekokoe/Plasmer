@@ -11,7 +11,7 @@ alldata <- read.table(contigFeatures,sep="\t",header=T,row.names=1)
 
 #colnames(alldata)
 
-data.rf <- useddata.rf
+#data.rf <- useddata.rf
 
 #rownames(useddata.rf$importance)
 
