@@ -1,6 +1,6 @@
 package:
     name: plasmer
-    version: $PACKAGE_VERSION
+    version: {{ package_version }}
 
 build:
     number: 1
