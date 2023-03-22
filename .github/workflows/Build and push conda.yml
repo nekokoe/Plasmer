@@ -4,17 +4,15 @@ on:
     branches:
       - "main"
     
+        
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: publish-to-conda
-      uses: MichaelsJP/conda-package-publish-action@v1.1.0
+      uses: elbeejay/conda-publish-action@v1.5
       with:
-        subDir: '.'
-        AnacondaToken: ${{ secrets.ANACONDA_TOKEN }}
+        subdir: '.'
+        anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
         platforms: 'linux-64'
-        override: true
-        dry_run: true
-        
