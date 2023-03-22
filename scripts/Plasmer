@@ -22,7 +22,7 @@ help()
 
 		-t --threads          Number of threads. [Default: 8]
 
-		-m --minimum_length  The minimum length(bp) of sequences, the sequences shorter than the length will be dropped. [Default: 500]
+		-m --minimum_length   The minimum length(bp) of sequences, the sequences shorter than the length will be dropped. [Default: 500]
 		
 		-l --length           The length(bp) threshold of sequences as chromosome to filtered. If set 0, no sequence are filtered, all sequences will be predicted. [Default: 500000]
 		
@@ -96,11 +96,11 @@ if [ ! -d ${db} ];then
 	exit 1
 	echo "ERROR: ${db} is not found or empty!"
 	else
-	if [ ! -s ${db}/list ];then
-		echo "ERROR: ${db}/list is not found or empty!"
+	if [ ! -s ${db}/plasmerMainDB.list ];then
+		echo "ERROR: ${db}/plasmerMainDB.list is not found or empty!"
 		exit 1
 		else
-			bash ${script_Dir}/checkDB.sh ${db}/list
+			bash ${script_Dir}/plasmerMainDB_check.sh ${db}/plasmerMainDB.list
 	fi
 fi
 
@@ -206,13 +206,23 @@ cat ${outpath}/intermediate/${prefix}.allFeatures.plasmer.predClass.tsv ${outpat
 #extract plasmids sequences
 python3 ${script_Dir}/extract_predPlasmids_seqs.py ${genome} ${outpath}/results/${prefix}.plasmer.predClass.tsv ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
 
-echo "Classifying taxonomy..."
-#annotate plasmids
-kraken2 --use-names --threads ${threads} --db ${db}/ncbiPlasmids --report ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.report --output ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
-cut -f2,3 ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out > ${outpath}/results/${prefix}.plasmer.predPlasmids.taxon
-
 mv ${outpath}/intermediate/${prefix}.allFeatures.plasmer.predProb.tsv ${outpath}/results/${prefix}.plasmer.predProb.tsv
 
-echo "Done!"
+echo "Predicting finished!"
 echo "See your result in ${outpath}/results/"
 
+echo "Classifying taxonomy..."
+#annotate plasmids
+
+if [ ! -s ${db}/customizedKraken2DB.list ];then
+	echo "${db}/customizedKraken2DB.list is not found or empty, skipping this step!"
+	exit 1
+	else
+		bash ${script_Dir}/customizedKraken2DB_check.sh ${db}/customizedKraken2DB.list
+		kraken2 --use-names --threads ${threads} --db ${db}/ncbiPlasmids --report ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.report --output ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out ${outpath}/results/${prefix}.plasmer.predPlasmids.fa
+		cut -f2,3 ${outpath}/intermediate/${prefix}.plasmer.predPlasmids.k2.out > ${outpath}/results/${prefix}.plasmer.predPlasmids.taxon
+
+echo "Plasmid taxonomy finished!"
+echo "See your result in ${outpath}/results/"
+
+fi
