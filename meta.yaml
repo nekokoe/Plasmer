@@ -1,6 +1,6 @@
 package:
     name: plasmer
-    version: "23.03.22"
+    version: $PACKAGE_VERSION
 
 build:
     number: 1
