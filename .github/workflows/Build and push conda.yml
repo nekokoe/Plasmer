@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: publish-to-conda
-      uses: iskoldt-X/conda-publish-action@conda
+      uses: iskoldt-X/conda-publish-action@v1.9
       with:
         subdir: '.'
         anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
