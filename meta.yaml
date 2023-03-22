@@ -25,10 +25,8 @@ source:
 requirements:
     build:
         - python ==3.10.4
-        - git
     run:
         - python ==3.10.4
-        - git
         - biopython
         - seqkit ==2.2.0
         - perl ==5.26.2
