@@ -1,0 +1,20 @@
+name: Build and push conda
+on:
+  push:
+    branches:
+      - "main"
+    
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: publish-to-conda
+      uses: MichaelsJP/conda-package-publish-action@v1.1.0
+      with:
+        subDir: '/'
+        AnacondaToken: ${{ secrets.ANACONDA_TOKEN }}
+        platforms: 'linux-64'
+        override: true
+        dry_run: true
+        
