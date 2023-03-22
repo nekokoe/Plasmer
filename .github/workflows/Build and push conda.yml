@@ -18,7 +18,7 @@ jobs:
           echo "RELEASE_DATE=$(date +%y.%m.%d)" >> ${GITHUB_ENV}
       - 
         name: publish-to-conda
-        uses: iskoldt-X/conda-publish-action@v5
+        uses: iskoldt-X/conda-publish-action@v6
         with:
           subdir: '.'
           anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
