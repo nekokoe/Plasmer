@@ -25,6 +25,7 @@ source:
 requirements:
     build:
         - python ==3.10.4
+        - git
     run:
         - python ==3.10.4
         - biopython
