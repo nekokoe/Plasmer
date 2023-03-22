@@ -1,6 +1,6 @@
 package:
     name: plasmer
-    version: {{ package_version }}
+    version: {{ PACKAGE_VERSION }}
 
 build:
     number: 1
