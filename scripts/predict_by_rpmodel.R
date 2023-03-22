@@ -15,7 +15,7 @@ data.rf <- useddata.rf
 
 #rownames(useddata.rf$importance)
 
-alldata <- alldata[,rownames(useddata.rf$importance)]
+alldata <- alldata[,rownames(data.rf$importance)]
 
 #colnames(alldata)
 

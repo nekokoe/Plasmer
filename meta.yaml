@@ -1,6 +1,6 @@
 package:
     name: plasmer
-    version: "1.0"
+    version: "23.03.22"
 
 build:
     number: 1
@@ -8,7 +8,7 @@ build:
     always_include_files:
         - bin/assign_taxon_labels.R
         - bin/checkDB.sh
-        - bin/check_length.py
+        - bin/check_length_by_input.py
         - bin/extract_predPlasmids_seqs.py
         - bin/getFeatBlastn.pl
         - bin/getFeatDomTbl.pl
@@ -17,10 +17,10 @@ build:
         - bin/mergeFeatsPredict.R
         - bin/Plasmer
         - bin/predict_by_rpmodel.R
-        - bin/scaffolding.py
 source:
-    url: https://github.com/nekokoe/Plasmer/releases/download/conda/Plasmer.zip
-    sha256: 563862b4a4491d8b3a5f928d178b1cc13f51406367761aaec9f088c6c9de7421
+    git_url: https://github.com/nekokoe/Plasmer.git
+    git_rev: main
+
 
 requirements:
     build:

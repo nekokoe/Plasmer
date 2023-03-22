@@ -5,24 +5,28 @@ help()
 	cat <<- EOF
 	Plasmer - an accurate and sensitive bacterial plasmid identification tool based on machine-learning of shared k-mers and genomic features
 
-	Usage: Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
+	Usage: Plasmer -g input_fasta -p out_prefix -d db -t threads -m minimum_length -l length -o outpath
 	Author: Qianhui Zhu
 
 	The parameters:
 
-		-h --help       Print the help info and exit.
+		-h --help             Print the help info and exit.
 
-		-v --version    Print the version info.
+		-v --version          Print the version info.
 
-		-g --genome     The input fasta. [required]
+		-g --genome           The input fasta. [required]
 
-		-p --prefix     The prefix of output. [Default: output]
+		-p --prefix           The prefix of output. [Default: output]
 		
-		-d --db         The path of databases. [required]
+		-d --db               The path of databases. [required]
 
-		-t --threads    Number of threads. [Default: 8]
+		-t --threads          Number of threads. [Default: 8]
 
-		-o --outpath    The outpath. [required]
+		-m --minimum_length  The minimum length(bp) of sequences, the sequences shorter than the length will be dropped. [Default: 500]
+		
+		-l --length           The length(bp) threshold of sequences as chromosome to filtered. If set 0, no sequence are filtered, all sequences will be predicted. [Default: 500000]
+		
+		-o --outpath          The outpath. [required]
 		
 	GitHub: https://github.com/nekokoe/Plasmer
 	License: CC-BY 4.0
@@ -50,6 +54,10 @@ while true;do
 			db=$2;shift 2;;
 		-t|--threads)
 			threads=$2;shift 2;;
+		-m|--minimum_length)
+			minimum_length=$2;shift 2;;
+		-l|--length)
+			length=$2;shift 2;;
 		-o|--outpath)
 			outpath=$2;shift 2;;
 		-h|--help)
@@ -57,12 +65,14 @@ while true;do
 		-v|--version)
 			version_info;; # Print the version info.
 		*)
-			echo "Usage: `basename $0` -h|--help -g|--genome -v|--version -p|--prefix -d|--db -t|--threads -o|--outpath"
+			echo "Usage: `basename $0` -h|--help -g|--genome -v|--version -p|--prefix -d|--db -t|--threads -m|minimum_length -l|--length -o|--outpath"
 		break;;
 	esac
 done
 
 threads=${threads:-8}
+length=${length:-500000}
+minimum_length=${minimum_length:-500}
 prefix=${prefix:-output}
 
 #check software
@@ -111,7 +121,7 @@ if [ ! -s ${outpath}/intermediate/${prefix}.seqkit ];then
 fi
 
 echo "Checking sequence length..."
-python3 ${script_Dir}/check_length.py ${genome} ${outpath}/intermediate/${prefix}.seqkit ${outpath}/intermediate/${prefix}.plasmer.length.class ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta
+python3 ${script_Dir}/check_length_by_input.py ${genome} ${outpath}/intermediate/${prefix}.seqkit $length $minimum_length ${outpath}/intermediate/${prefix}.plasmer.length.class ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta
 
 echo ${outpath}/intermediate/${prefix}.plasmer.length.unclass.fasta > ${outpath}/intermediate/${prefix}.sample.list
 
@@ -188,6 +198,7 @@ Rscript ${script_Dir}/mergeFeatsPredict.R \
 
 echo "Predicting..."
 #Model predict
+#Rscript ${script_Dir}/predict_by_rpmodel.R ${db}/All.rk18pk25.rp.all2class.per0.8OR10w.traindata.rfmodel.RData ${outpath}/intermediate/${prefix}.allFeatures
 Rscript ${script_Dir}/predict_by_rpmodel.R ${db}/All.sample6w.filter.features.rmGC.2class.rfmodel.RData ${outpath}/intermediate/${prefix}.allFeatures
 
 cat ${outpath}/intermediate/${prefix}.allFeatures.plasmer.predClass.tsv ${outpath}/intermediate/${prefix}.plasmer.length.class > ${outpath}/results/${prefix}.plasmer.predClass.tsv
