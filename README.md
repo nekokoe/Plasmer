@@ -16,9 +16,21 @@ An accurate and sensitive bacterial plasmid identification tool based on deep ma
 
 Please download and decompress our pre-built database. 
 
-The pre-built database is available at https://doi.org/10.6084/m9.figshare.20709454.
+The pre-built database are available at [Zenodo](https://doi.org/10.5281/zenodo.7030674) and [Google Drive](https://drive.google.com/drive/folders/1C1XLqTuPVfwyB7N3b5QAU09Rn-Qq7RdD?usp=sharing).
 
-Provide the absolute path of database folder to -d parameter on the command line.
+The link contains two file, `plasmerMainDB.tar.xz` and `customizedKraken2DB.tar.xz`. 
+
+Check the sha1sum:
+
+```
+$ sha1sum plasmerMainDB.tar.xz 
+0b08f5c30d60b137f54de6024ab7557031850db6  plasmerMainDB.tar.xz
+
+$ sha1sum customizedKraken2DB.tar.xz 
+b14efdd9232fd5f6d066716bd8e3e6ca80c9c0de  customizedKraken2DB.tar.xz
+```
+
+Extract the contents into the same directory, and provide the absolute path of the directory to the -d parameter on the command line.
 
 
 
@@ -78,19 +90,23 @@ Replace `{absolutePathToPlasmer}/` with the path to Plasmer script, omit it if y
 The parameters:
 
 ```
--h --help       Print the help info and exit.
+-h	--help				Print the help info and exit.
 
--v --version    Print the version info.
+-v	--version			Print the version info.
 
--g --genome     The input fasta. [required]
+-g	--genome			The input fasta. [required]
 
--p --prefix     The prefix for intermediate files and results. [Default: output]
+-p	--prefix			The prefix for intermediate files and results. [Default: output]
 
--d --db         The path of pre-built Plasmer databases. [required]
+-d	--db				The path of pre-built Plasmer databases. [required]
 
--t --threads    Number of threads. [Default: 8]
+-t	--threads			Number of threads. [Default: 8]
 
--o --outpath    The outpath. [required]
+-m	--minimum_length	The minimum length(bp) of sequences, the sequences shorter than the length will be dropped. [Default: 500]
+		
+-l	--length			The length(bp) threshold of sequences as chromosome to filtered. If set 0, no sequence are filtered, all sequences will be predicted. [Default: 500000]
+
+-o	--outpath			The outpath. [required]
 ```
 
 
@@ -121,6 +137,8 @@ docker run -d --rm --name plasmer \
 	-p {prefix} \
 	-d /db \
 	-t {threadnumber} \
+	-m 500 \
+	-l 500000 \
 	-o /output
 ```
 
@@ -140,22 +158,71 @@ Replace with your own input:
 We also provide a bash shell script that runs the Docker for you, if you have many input files in a directory.
 
 ```
-bash dockerrun_batch.sh /input/files/path /output/files/path /database/path CPU_threads
+bash dockerrun_batch.sh /input/files/path /output/files/path /database/path CPU_threads minimum_length length
 ```
 
 ## Output
 
 In the outpath/results, 4 files are generated, including:
 
-```
-  prefix.plasmer.predProb.tsv: The probability of each contig classified to chromosome and plasmid.
+`prefix.plasmer.predProb.tsv`
 
-  prefix.plasmer.predClass.tsv: The class of each contig.
+`prefix.plasmer.predClass.tsv`
 
-  prefix.plasmer.predPlasmids.taxon: The taxonomy of each predicted plasmid contig.
+`prefix.plasmer.predPlasmids.taxon`
 
-  prefix.plasmer.predPlasmids.fa: The sequences of predicted plasmid contigs.
-```
+`prefix.plasmer.predPlasmids.fa`
+
+
+Have a look at `result_example` folder of the Github repository:
+
+The `example.plasmer.predProb.tsv`: The probability of each contig classified to chromosome and plasmid.
+
+| Contig | chromosome | plasmid |
+| --- | --- | --- |
+| contig_1 | 0.832 | 0.168 |
+| contig_2 | 0.952 | 0.048 |
+| contig_3 | 0.022 | 0.978 |
+| contig_4 | 0.984 | 0.016 |
+| contig_5 | 0 | 1 |
+| contig_6 | 0 | 1 |
+| contig_7 | 0.906 | 0.094 |
+| contig_8 | 0 | 1 |
+| contig_9 | 0.84 | 0.16 |
+| contig_10 | 0 | 1 |
+| --- | --- | --- |
+
+The `example.plasmer.predClass.tsv`: The class of each contig.
+
+| Contig | Type |
+| --- | --- |
+| contig_1 | chromosome |
+| contig_2 | chromosome |
+| contig_3 | plasmid |
+| contig_4 | chromosome |
+| contig_5 | plasmid |
+| contig_6 | plasmid |
+| contig_7 | chromosome |
+| contig_8 | plasmid |
+| contig_9 | chromosome |
+| contig_10 | plasmid |
+
+The `example.plasmer.predPlasmids.taxon`: The taxonomy of each predicted plasmid contig.
+
+| Contig | Taxonomy ID |
+| --- | --- |
+| contig_1 | Enterococcus faecium (taxid 1352) |
+| contig_2 | Enterococcus faecium (taxid 1352) |
+| contig_3 | Enterococcus faecium (taxid 1352) |
+| contig_4 | Enterococcus faecium (taxid 1352) |
+| contig_5 | Enterococcus faecium (taxid 1352) |
+| contig_6 | Enterococcus faecium Aus0085 (taxid 1305849) |
+| contig_7 | Enterococcus faecium (taxid 1352) |
+| contig_8 | Enterococcus faecium (taxid 1352) |
+| contig_9 | Enterococcus faecium (taxid 1352) |
+| contig_10 | Enterococcus faecium (taxid 1352) |
+
+The `example.plasmer.predPlasmids.fa`: The sequences of predicted plasmid contigs.
 
 
 ## Feedback
