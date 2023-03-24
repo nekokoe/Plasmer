@@ -83,9 +83,8 @@ echo 'export PATH=$PATH:'$(pwd) >> ~/.bashrc && source ~/.bashrc
 ## Usage
 
 ```
-{absolutePathToPlasmer}/Plasmer -g input_fasta -p out_prefix -d db -t threads -o outpath
+Plasmer -g input_fasta -p out_prefix -d db -t threads -m minimum_length -l length -o outpath
 ```
-Replace `{absolutePathToPlasmer}/` with the path to Plasmer script, omit it if you install Plasmer directly using conda.
 
 The parameters:
 
@@ -190,7 +189,6 @@ The `example.plasmer.predProb.tsv`: The probability of each contig classified to
 | contig_8 | 0 | 1 |
 | contig_9 | 0.84 | 0.16 |
 | contig_10 | 0 | 1 |
-| --- | --- | --- |
 
 The `example.plasmer.predClass.tsv`: The class of each contig.
 
@@ -224,6 +222,9 @@ The `example.plasmer.predPlasmids.taxon`: The taxonomy of each predicted plasmid
 
 The `example.plasmer.predPlasmids.fa`: The sequences of predicted plasmid contigs.
 
+## Prediction results of other tools
+
+Download the results of other tools from [Zenodo](https://doi.org/10.5281/zenodo.7763548) or [Google Drive](https://drive.google.com/drive/folders/1AhJ3RYq8alAOMx8QGH0PjePKkB0qP3YP?usp=share_link).
 
 ## Feedback
 
