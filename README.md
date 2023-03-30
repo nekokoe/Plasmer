@@ -1,8 +1,9 @@
 # Plasmer
 
-<img src="https://anaconda.org/iskoldt/plasmer/badges/version.svg"/> <img src="https://img.shields.io/docker/pulls/nekokoe/plasmer.svg"/> <img src="https://img.shields.io/github/last-commit/nekokoe/Plasmer.svg"/> <img src="https://img.shields.io/github/license/nekokoe/Plasmer.svg"/> 
-
-
+[![Anaconda-Plasmer](https://anaconda.org/iskoldt/plasmer/badges/version.svg)](https://anaconda.org/iskoldt/plasmer)
+[![Docker-Plasmer](https://img.shields.io/docker/pulls/nekokoe/plasmer.svg)](https://hub.docker.com/r/nekokoe/plasmer)
+[![GitHub-Plasmer-last-commit](https://img.shields.io/github/last-commit/nekokoe/Plasmer.svg)](https://github.com/nekokoe/Plasmer)
+<img src="https://img.shields.io/github/license/nekokoe/Plasmer.svg"/> 
 
 An accurate and sensitive bacterial plasmid identification tool based on deep machine-learning of shared k-mers and genomic features.
 
