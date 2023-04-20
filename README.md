@@ -163,7 +163,7 @@ bash dockerrun_batch.sh /input/files/path /output/files/path /database/path CPU_
 
 ## Output
 
-In the outpath/results, 4 files are generated, including:
+In the outpath/results, 5 files are generated, including:
 
 `prefix.plasmer.predProb.tsv`
 
@@ -172,6 +172,8 @@ In the outpath/results, 4 files are generated, including:
 `prefix.plasmer.predPlasmids.taxon`
 
 `prefix.plasmer.predPlasmids.fa`
+
+`prefix.plasmer.shorterM.fasta`
 
 
 Have a look at `result_example` folder of the Github repository:
@@ -222,6 +224,8 @@ The `example.plasmer.predPlasmids.taxon`: The taxonomy of each predicted plasmid
 | contig_10 | Enterococcus faecium (taxid 1352) |
 
 The `example.plasmer.predPlasmids.fa`: The sequences of predicted plasmid contigs.
+
+The `prefix.plasmer.shorterM.fasta` contains the sequences filtered out by the -m parameter.
 
 ## Prediction results of other tools
 
